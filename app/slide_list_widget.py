@@ -84,7 +84,7 @@ class SlideListWidget(QTableWidget):
         
         # Find all SVS and NDPI files
         for filename in os.listdir(folder_path):
-            if filename.lower().endswith(('.svs', '.ndpi')):
+            if filename.lower().endswith(('.svs', '.ndpi', '.mrxs', '.tif', '.tiff')):
                 filepath = os.path.join(folder_path, filename)
                 try:
                     slide = tiffslide.TiffSlide(filepath)
