@@ -24,7 +24,7 @@ pip install pyinstaller
 
 2. Create executable:
 ```bash
-pyinstaller --name wsi_deidentifier --windowed --onefile app/main.py
+pyinstaller --name wsi_deidentifier --windowed --onefile --add-data "LICENSE;." app/main.py
 ```
 
 The executable will be created in the `dist` folder. You can find it at `dist/wsi_deidentifier.exe`.
