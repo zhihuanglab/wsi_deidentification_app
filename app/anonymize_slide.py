@@ -1,29 +1,19 @@
-import subprocess
 import os
-import sys
+import anonymize_functions  # Import the updated anonymization functions
 
 def anonymize_slide(filepath):
-    script_path = os.path.join(os.path.dirname(__file__), "anonymize-slide.py")
+    """ Calls anonymization function directly from `anonymize_functions.py` """
     abs_filepath = os.path.abspath(filepath)
 
-    if getattr(sys, 'frozen', False):
-        python_executable = os.path.join(sys._MEIPASS, "python.exe")
-    else:
-        python_executable = sys.executable
+    print(f"Anonymizing file: {abs_filepath}")
 
     try:
-        process = subprocess.Popen(
-            [python_executable, script_path, abs_filepath],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            creationflags=subprocess.CREATE_NO_WINDOW
-        )
-        stdout, stderr = process.communicate()
-
-        if process.returncode != 0:
-            raise Exception(f"Anonymization failed: {stderr}")
-
-        return True
+        success = anonymize_functions._main([abs_filepath])  # Now `_main()` accepts arguments
+        if success == 0:  # `_main()` returns 0 on success
+            print(f"Anonymization completed successfully for {abs_filepath}")
+            return True
+        else:
+            raise Exception("Anonymization failed with non-zero exit code.")
     except Exception as e:
+        print(f"Error during anonymization: {str(e)}")
         raise Exception(f"Error during anonymization: {str(e)}")

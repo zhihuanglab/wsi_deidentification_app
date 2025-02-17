@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-#  anonymize-slide.py - Delete the label from a whole-slide image.
+#  anonymize_functions.py - Delete the label from a whole-slide image.
 #
 #  Copyright (c) 2007-2013 Carnegie Mellon University
 #  Copyright (c) 2011      Google, Inc.
@@ -543,25 +543,24 @@ format_handlers = [
 ]
 
 
-def _main():
+def _main(args=None):
+    """ Main function to process file paths """
     global DEBUG
 
+    if args is None:
+        args = sys.argv[1:]  # Default to command-line args if none provided
+
     parser = OptionParser(usage='%prog [options] file [file...]',
-            description=PROG_DESCRIPTION, version=PROG_VERSION)
+                          description=PROG_DESCRIPTION, version=PROG_VERSION)
     parser.add_option('-d', '--debug', action='store_true',
-            help='show debugging information')
-    opts, args = parser.parse_args()
+                      help='show debugging information')
+    opts, args = parser.parse_args(args)  # Parse provided arguments
     if not args:
-        parser.error('specify a file')
+        parser.error('Specify at least one file')
+
     DEBUG = opts.debug
 
-    if sys.platform == 'win32':
-        # The shell expects us to do wildcard expansion
-        filenames = []
-        for arg in args:
-            filenames.extend(glob(arg) or [arg])
-    else:
-        filenames = args
+    filenames = args
 
     exit_code = 0
     for filename in filenames:
@@ -577,9 +576,10 @@ def _main():
         except Exception as e:
             if DEBUG:
                 raise
-            print('%s: %s' % (filename, str(e)), file=sys.stderr)
+            print(f'{filename}: {str(e)}', file=sys.stderr)
             exit_code = 1
-    sys.exit(exit_code)
+    return exit_code  # Return the exit code instead of calling sys.exit()
+
 
 
 if __name__ == '__main__':
