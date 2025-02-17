@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, 
                               QPushButton, QFileDialog, QMessageBox,
-                              QDialog, QCheckBox, QLabel, QGridLayout)
-from PySide6.QtCore import Qt
+                              QDialog, QCheckBox, QLabel, QGridLayout,
+                              QProgressDialog)
+from PySide6.QtCore import Qt, QTimer
 from slide_list_widget import SlideListWidget
 import os
 
@@ -70,10 +71,37 @@ class MainWindow(QMainWindow):
             try:
                 # Store the folder path for later use
                 self.current_folder = folder_path
-                self.slide_list.load_slides(folder_path)
-                self.anonymize_all_btn.setEnabled(True)
+                
+                # Create and show progress dialog
+                progress = QProgressDialog("Loading slides...", None, 0, 0, self)
+                progress.setWindowTitle("Please Wait")
+                progress.setWindowModality(Qt.WindowModal)
+                progress.setMinimumDuration(0)
+                progress.setValue(0)
+                progress.setStyleSheet("""
+                    QProgressDialog {
+                        background-color: white;
+                    }
+                    QLabel {
+                        color: #333333;
+                        font-size: 14px;
+                    }
+                """)
+                
+                # Use QTimer to allow the progress dialog to show
+                QTimer.singleShot(100, lambda: self._load_slides(folder_path, progress))
+                
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error loading slides: {str(e)}")
+
+    def _load_slides(self, folder_path, progress):
+        try:
+            self.slide_list.load_slides(folder_path)
+            self.anonymize_all_btn.setEnabled(True)
+            progress.close()
+        except Exception as e:
+            progress.close()
+            QMessageBox.critical(self, "Error", f"Error loading slides: {str(e)}")
     
     def anonymize_all_slides(self):
         # Show configuration dialog
