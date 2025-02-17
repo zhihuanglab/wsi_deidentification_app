@@ -12,3 +12,7 @@ build/
 venv/
 env/
 .env/
+
+# Local files
+.idea
+.DS_Store
